@@ -63,7 +63,9 @@ class Request extends Url
     {
         if ($this->resolver === null) {
             $this->resolver = new $this->resolverClass(UrlRedirect::resolve($this->buildUrl()), $this->resolverConfig);
-            $this->parseUrl($this->resolver->getUrl());
+            if ($this->getDomain() !== 'instagram') {
+                $this->parseUrl($this->resolver->getUrl());
+            }
         }
 
         return $this->resolver;
