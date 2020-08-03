@@ -166,7 +166,7 @@ abstract class Provider
             return ($parsed['scheme']) . '://' . mb_substr($addr, 2);
         }
         // otherwise if the address should go to the top of the tree
-        elseif ($addr{0} === '/') {
+        elseif (mb_substr($addr, 0, 1) === '/') {
             return ($parsed['scheme']) . '://' . ($parsed['host']) .
             ($addr);
         }
