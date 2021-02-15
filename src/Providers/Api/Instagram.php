@@ -3,7 +3,9 @@ namespace Embed\Providers\Api;
 
 use Embed\Providers\Provider;
 use Embed\Providers\ProviderInterface;
+use Embed\RequestResolvers\Curl;
 use Embed\Url;
+use phpDocumentor\Reflection\Types\Mixed_;
 
 /**
  * Provider to use the API of facebook
@@ -22,11 +24,11 @@ class Instagram extends Provider implements ProviderInterface
     public function run()
     {
         if (($id = $this->getId($this->request))) {
-            if ($this->config['key']) {
+            if ($accessToken = $this->getAccessToken()) {
                 $api = $this->request
                     ->withUrl('https://graph.facebook.com/v9.0/instagram_oembed')
                     ->withQueryParameter('url', $this->request->getURL())
-                    ->withQueryParameter('access_token', $this->config['key']);
+                    ->withQueryParameter('access_token', $accessToken);
 
                 if ($json = $api->getJsonContent()) {
                     $this->bag->set($json);
@@ -133,5 +135,23 @@ class Instagram extends Provider implements ProviderInterface
         }
 
         return $images;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getAccessToken()
+    {
+        $api = $this->request
+            ->withUrl('https://graph.facebook.com/oauth/access_token')
+            ->withQueryParameter('grant_type', 'client_credentials')
+            ->withQueryParameter('client_id', $this->config['client_id'])
+            ->withQueryParameter('client_secret', $this->config['client_secret']);
+
+        if ($json = $api->getJsonContent()) {
+            return $json['access_token'];
+        }
+
+        return false;
     }
 }
