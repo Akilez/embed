@@ -1,8 +1,10 @@
 <?php
 namespace Embed\Providers\Api;
 
+use Embed\Bag;
 use Embed\Providers\Provider;
 use Embed\Providers\ProviderInterface;
+use Embed\Request;
 use Embed\Url;
 
 /**
@@ -21,11 +23,18 @@ class Facebook extends Provider implements ProviderInterface
          */
         public function run()
         {
-            if (($id = $this->getId($this->request))) {
-                if ($this->config['key']) {
+            if ($this->request->getPath() == '/login' && $this->request->hasQueryParameter('next')) {
+                $id = $this->getId($url = new Url($this->request->getQueryParameter('next')));
+                $this->bag->set('request_url', $url->getUrl());
+            } else {
+                $id = $this->getId($this->request);
+            }
+            if ($id) {
+                if ($accessToken = $this->getAccessToken()) {
                     $api = $this->request
-                        ->withUrl('https://graph.facebook.com/'.$id)
-                        ->withQueryParameter('access_token', $this->config['key']);
+                        ->withUrl('https://graph.facebook.com/v10.0/oembed_post')
+                        ->withQueryParameter('url', isset($url) ? $url->getUrl() : $this->request->getUrl())
+                        ->withQueryParameter('access_token', $accessToken);
 
                     if ($json = $api->getJsonContent()) {
                         $this->bag->set($json);
@@ -124,21 +133,7 @@ class Facebook extends Provider implements ProviderInterface
         public function getCode()
         {
             if ($this->isEmbeddable) {
-                $url = $this->getUrl() ?: $this->request->getUrl();
-                $width = $this->getWidth();
-
-                return <<<EOT
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&version=v2.3";
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-<div class="fb-post" data-href="{$url}" data-width="{$width}"></div>
-EOT;
+                return $this->bag->get('html');
             }
         }
 
@@ -185,4 +180,22 @@ EOT;
 
             return $images;
         }
+
+    /**
+     * @return mixed
+     */
+    protected function getAccessToken()
+    {
+        $api = $this->request
+            ->withUrl('https://graph.facebook.com/oauth/access_token')
+            ->withQueryParameter('grant_type', 'client_credentials')
+            ->withQueryParameter('client_id', $this->config['client_id'])
+            ->withQueryParameter('client_secret', $this->config['client_secret']);
+
+        if ($json = $api->getJsonContent()) {
+            return $json['access_token'];
+        }
+
+        return false;
+    }
 }
