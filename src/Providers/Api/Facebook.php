@@ -32,7 +32,7 @@ class Facebook extends Provider implements ProviderInterface
             if ($id) {
                 if ($accessToken = $this->getAccessToken()) {
                     $api = $this->request
-                        ->withUrl('https://graph.facebook.com/v10.0/oembed_post')
+                        ->withUrl('https://graph.facebook.com/v11.0/oembed_post')
                         ->withQueryParameter('url', isset($url) ? $url->getUrl() : $this->request->getUrl())
                         ->withQueryParameter('access_token', $accessToken);
 
