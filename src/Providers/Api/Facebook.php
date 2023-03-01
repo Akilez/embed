@@ -90,6 +90,12 @@ class Facebook extends Provider implements ProviderInterface
                 return $url->getDirectoryPosition(3);
             }
 
+            if ($url->getDirectoryPosition(1) === 'photos') {
+                $this->isEmbeddable = true;
+
+                return $url->getDirectoryPosition(3);
+            }
+
             return $url->getDirectoryPosition(0);
         }
 
