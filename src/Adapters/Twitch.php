@@ -24,7 +24,7 @@ class Twitch extends Webpage implements AdapterInterface
      */
     public function run()
     {
-        //$this->addProvider('twitch', new Api\Twitch());
+        $this->addProvider('twitch', new Api\Twitch());
 
         parent::run();
     }

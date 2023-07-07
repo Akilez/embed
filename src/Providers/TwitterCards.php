@@ -79,7 +79,15 @@ class TwitterCards extends Provider implements ProviderInterface
     public function getCode()
     {
         if ($this->bag->has('player')) {
-            return Utils::iframe($this->bag->get('player'), $this->getWidth(), $this->getHeight());
+            $src = $this->bag->get('player');
+            if (preg_match('/parent=meta\.tag/', $src)) {
+                $src = preg_replace_callback('/parent=meta\.tag/', [
+                    $this,
+                    'addFrameAncestors',
+                ], $src);
+            }
+
+            return Utils::iframe($src, $this->getWidth(), $this->getHeight());
         }
     }
 
@@ -121,5 +129,15 @@ class TwitterCards extends Provider implements ProviderInterface
     public function getHeight()
     {
         return $this->bag->get('player:height');
+    }
+
+    protected function addFrameAncestors($parentString)
+    {
+        $ancestors = [];
+        foreach ($this->config['frame_ancestors'] as $frame_ancestor) {
+            $ancestors[] =  sprintf('parent=%s', $frame_ancestor);
+        }
+
+        return implode('&', $ancestors);
     }
 }

@@ -40,19 +40,19 @@ class Twitch extends Provider implements ProviderInterface
                             ->withUrl('https://api.twitch.tv/helix/clips')
                             ->withQueryParameter('id', $path[2]);
                     }
-                }
-
-                switch ($path[0]) {
-                    case 'videos':
-                        $api = $request
-                            ->withUrl('https://api.twitch.tv/helix/videos')
-                            ->withQueryParameter('id', $path[1]);
-                        break;
-                    default:
-                        $api = $request
-                            ->withUrl('https://api.twitch.tv/helix/streams')
-                            ->withQueryParameter('user_id', $path[0]);
-                        break;
+                } else {
+                    switch ($path[0]) {
+                        case 'videos':
+                            $api = $request
+                                ->withUrl('https://api.twitch.tv/helix/videos')
+                                ->withQueryParameter('id', $path[1]);
+                            break;
+                        default:
+                            $api = $request
+                                ->withUrl('https://api.twitch.tv/helix/streams')
+                                ->withQueryParameter('user_id', $path[0]);
+                            break;
+                    }
                 }
 
                 if ($json = $api->getJsonContent()) {
