@@ -34,7 +34,7 @@ class Twitch extends Provider implements ProviderInterface
                     ]
                 ]);
 
-                if ($path[1] == 'clip') {
+                if (isset ($path[1]) && $path[1] == 'clip') {
                     if (isset($path[2])) {
                         $api = $request
                             ->withUrl('https://api.twitch.tv/helix/clips')
