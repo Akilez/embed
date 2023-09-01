@@ -84,6 +84,7 @@ abstract class Adapter
 
         //if the canonical url is different, repeat the proccess
         $canonical = $this->getUrl();
+        $that = clone $this;
 
         if ($this->request->getUrl() !== $canonical) {
             $request = $this->request->withUrl($canonical);
@@ -92,6 +93,11 @@ abstract class Adapter
                 $this->request = $request;
                 $this->run();
             }
+        }
+
+        if ($this->getCode() == null && $that->getCode() !== null) {
+            $this->request = $that->request;
+            $this->providers = $that->providers;
         }
     }
 
@@ -158,6 +164,17 @@ abstract class Adapter
         if (method_exists($this, $method)) {
             return $this->$name = $this->$method();
         }
+    }
+
+    public function __clone()
+    {
+        $request = $this->request;
+        unset($this->request);
+        $this->request = $request;
+
+        $providers = $this->providers;
+        unset($this->providers);
+        $this->providers = $providers;
     }
 
     /**
