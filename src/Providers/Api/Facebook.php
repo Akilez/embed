@@ -32,7 +32,7 @@ class Facebook extends Provider implements ProviderInterface
             if ($id) {
                 if ($accessToken = $this->getAccessToken()) {
                     $api = $this->request
-                        ->withUrl('https://graph.facebook.com/v11.0/oembed_post')
+                        ->withUrl('https://graph.facebook.com/v19.0/oembed_post')
                         ->withQueryParameter('url', isset($url) ? $url->getUrl() : $this->request->getUrl())
                         ->withQueryParameter('access_token', $accessToken);
 
@@ -85,6 +85,12 @@ class Facebook extends Provider implements ProviderInterface
             }
 
             if ($url->getDirectoryPosition(2) === 'posts') {
+                $this->isEmbeddable = true;
+
+                return $url->getDirectoryPosition(3);
+            }
+
+            if ($url->getDirectoryPosition(1) === 'videos') {
                 $this->isEmbeddable = true;
 
                 return $url->getDirectoryPosition(3);
