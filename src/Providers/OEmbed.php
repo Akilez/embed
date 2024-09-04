@@ -81,7 +81,7 @@ class OEmbed extends Provider implements ProviderInterface
      */
     public function getType()
     {
-        $type = $this->bag->get('type');
+        $type = $this->bag->get('type') ?? '';
 
         if (strpos($type, ':') !== false) {
             $type = substr(strrchr($type, ':'), 1);
