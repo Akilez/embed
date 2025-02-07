@@ -8,7 +8,7 @@ class Youtube extends OEmbedImplementation
      */
     public static function getEndPoint()
     {
-        return 'http://www.youtube.com/oembed';
+        return 'https://www.youtube.com/oembed';
     }
 
     /**
