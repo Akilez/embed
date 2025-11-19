@@ -68,6 +68,10 @@ class Facebook extends Provider implements ProviderInterface
                 return $url->getQueryParameter('id');
             }
 
+            if ($url->hasQueryParameter('v')) {
+                return $url->getQueryParameter('v');
+            }
+
             if ($url->getDirectoryPosition(0) === 'events') {
                 $this->isEmbeddable = true;
 
@@ -90,10 +94,14 @@ class Facebook extends Provider implements ProviderInterface
                 return $url->getDirectoryPosition(3);
             }
 
+            if ($url->getDirectoryPosition(0) === 'reel') {
+                return $url->getDirectoryPosition(1);
+            }
+
             if ($url->getDirectoryPosition(1) === 'videos') {
                 $this->isEmbeddable = true;
 
-                return $url->getDirectoryPosition(3);
+                return $url->getDirectoryPosition(2);
             }
 
             if ($url->getDirectoryPosition(1) === 'photos') {
